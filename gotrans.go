@@ -14,15 +14,16 @@ import (
 
 const (
 	// Default timeout is 10s in ns
-	DefaultTimeout      = 10000000000
-	DevURL              = "https://api.sandbox.veritrans.co.id/v2"
-	ProdURL             = "https://api.veritrans.co.id/v2"
-	ChargePath          = "/charge"
-	ContentTypeHeader   = "Content-Type"
-	AcceptHeader        = "Accept"
-	AuthorizationHeader = "Authorization"
-	ContentType         = "application/json"
-	Accept              = "application/json"
+	DefaultTimeout           = 10000000000
+	DevURL                   = "https://api.sandbox.veritrans.co.id/v2"
+	ProdURL                  = "https://api.veritrans.co.id/v2"
+	ChargePath               = "/charge"
+	GetTransactionStatusPath = "/status"
+	ContentTypeHeader        = "Content-Type"
+	AcceptHeader             = "Accept"
+	AuthorizationHeader      = "Authorization"
+	ContentType              = "application/json"
+	Accept                   = "application/json"
 )
 
 type Gotrans struct {
@@ -75,15 +76,17 @@ func (g *Gotrans) CheckStatusCode(code int) bool {
 	return !(code != 200 && code != 201 && code != 202 && code != 407)
 }
 
-func (g *Gotrans) Post(targetUrl, serverKey string, transaction Transaction) (string, error) {
+func (g *Gotrans) Charge(targetUrl, serverKey string, transaction Transaction) (APIResponse, error) {
+	response := APIResponse{}
+
 	body, err := g.CreateBody(transaction)
 	if err != nil {
-		return "", err
+		return response, err
 	}
 
 	req, err := http.NewRequest(http.MethodPost, targetUrl, body)
 	if err != nil {
-		return "", err
+		return response, err
 	}
 	req.Header.Set(ContentTypeHeader, ContentType)
 	req.Header.Set(AcceptHeader, Accept)
@@ -91,29 +94,28 @@ func (g *Gotrans) Post(targetUrl, serverKey string, transaction Transaction) (st
 
 	resp, err := g.HttpClient.Do(req)
 	if err != nil {
-		return "", err
+		return response, err
 	}
 	defer resp.Body.Close()
 
 	if !g.CheckStatusCode(resp.StatusCode) {
-		return "", errors.New("Failed to send POST request: " + resp.Status)
+		return response, errors.New("Failed to send POST request: " + resp.Status)
 	}
 
 	rawResp, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
-		return "", err
+		return response, err
 	}
 
-	response := APIResponse{}
 	err = json.Unmarshal(rawResp, &response)
 	if err != nil {
-		return "", err
+		return response, err
 	}
 
-	return response.RedirectURL, nil
+	return response, nil
 }
 
-func (g *Gotrans) GetVtWebRedirectionUrl(transaction Transaction) (string, error) {
+func (g *Gotrans) ChargeVtWeb(transaction Transaction) (APIResponse, error) {
 	transaction.PaymentType = "vtweb"
 	transaction.VtWeb = VtWeb{
 		CreditCard3DSecure: true,
@@ -137,5 +139,5 @@ func (g *Gotrans) GetVtWebRedirectionUrl(transaction Transaction) (string, error
 		// to be created
 	}
 
-	return g.Post(g.BaseURL+ChargePath, g.ServerKey, transaction)
+	return g.Charge(g.BaseURL+ChargePath, g.ServerKey, transaction)
 }

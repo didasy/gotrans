@@ -33,6 +33,11 @@ type Transaction struct {
 	Unit               string             `json:"unit,omitempty"` // minute || hour || day
 }
 
+func (t *Transaction) String() string {
+	data, _ := json.MarshalIndent(t, "", "    ")
+	return string(data)
+}
+
 type CreditCardDetail struct {
 	TokenID         string   `json:"token_id,omitempty"`
 	Bank            string   `json:"bank,omitempty"`

@@ -1,5 +1,7 @@
 package gotrans
 
+import "encoding/json"
+
 type APIResponse struct {
 	StatusCode           string      `json:"status_code"`
 	StatusMessage        string      `json:"status_message"`
@@ -24,6 +26,11 @@ type APIResponse struct {
 	SaveTokenIDExpiredAt string      `json:"save_token_id_expired_at,omitempty"`
 	XLTunaiOrderID       string      `json:"xl_tunai_order_id,omitempty"`
 	XLTunaiMerchantID    string      `json:"xl_tunai_merchant_id,omitempty"`
+}
+
+func (a APIResponse) String() string {
+	data, _ := json.MarshalIndent(a, "", "    ")
+	return string(data)
 }
 
 type VADetail struct {

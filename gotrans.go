@@ -17,12 +17,17 @@ const (
 	DevURL  = "https://api.sandbox.veritrans.co.id/v2"
 	ProdURL = "https://api.veritrans.co.id/v2"
 
+	SNAPDevURL  = "https://app.sandbox.midtrans.com"
+	SNAPProdURL = "https://app.midtrans.com"
+
 	ChargePath               = "/charge"
 	GetTransactionStatusPath = "/status"
 	CaptureTransactionPath   = "/capture"
 	ApproveTransactionPath   = "/v2/{id}/approve"
 	CancelTransactionPath    = "/v2/{id}/cancel"
 	ExpireTransactionPath    = "/v2/{id}/expire"
+
+	SNAPTransactionPath = "/snap/v1/transactions"
 
 	ContentTypeHeader   = "Content-Type"
 	AcceptHeader        = "Accept"
@@ -46,6 +51,7 @@ type Gotrans struct {
 	IsSanitized  bool
 	Is3Dsecure   bool
 	BaseURL      string
+	SNAPBaseURL  string
 }
 
 func New(serverKey, clientKey string, isProduction, isSanitized, is3Dsecure bool, timeout time.Duration) *Gotrans {
@@ -62,10 +68,12 @@ func New(serverKey, clientKey string, isProduction, isSanitized, is3Dsecure bool
 		IsSanitized:  isSanitized,
 		Is3Dsecure:   is3Dsecure,
 		BaseURL:      DevURL,
+		SNAPBaseURL:  SNAPDevURL,
 	}
 
 	if isProduction {
 		t.BaseURL = ProdURL
+		t.SNAPBaseURL = SNAPProdURL
 	}
 
 	return t

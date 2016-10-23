@@ -13,7 +13,7 @@ type Transaction struct {
 	TransactionDetails *TransactionDetail `json:"transaction_details,omitempty"`
 	BankTransfer       *BankTransfer      `json:"bank_transfer,omitempty"`
 	ItemDetails        []*ItemDetail      `json:"item_detail,omitempty"`
-	CustomerDetail     *CustomerDetail    `json:"customer_detail,omitempty"`
+	CustomerDetails    *CustomerDetail    `json:"customer_details,omitempty"`
 	Echannel           *Echannel          `json:"echannel,omitempty"`
 	CustomField1       string             `json:"custom_field1,omitempty"` // max 255 char
 	CustomField2       string             `json:"custom_field2,omitempty"` // max 255 char
@@ -28,9 +28,7 @@ type Transaction struct {
 	IndosatDompetku    *IndosatDompetku   `json:"indosat_dompetku,omitempty"`
 	ConvenienceStore   *ConvenienceStore  `json:"cstore,omitempty"`
 	CreditCard         *CreditCardDetail  `json:"credit_card,omitempty"`
-	OrderTime          string             `json:"order_time,omitempty"` // yyyy-MM-dd hh:mm:ss Z
-	ExpiryDuration     string             `json:"expiry_duration,omitempty"`
-	Unit               string             `json:"unit,omitempty"` // minute || hour || day
+	CustomExpiry       *Expiry            `json:"custom_expiry,omitempty"`
 }
 
 func (t *Transaction) String() string {
@@ -38,14 +36,41 @@ func (t *Transaction) String() string {
 	return string(data)
 }
 
+type Expiry struct {
+	StartTime      string `json:"start_time,omitempty"` // 2017-04-13 18:11:08 +0700
+	ExpiryDuration int    `json:"expiry_duration,omitempty"`
+	Unit           string `json:"unit,omitempty"`       // minute || hour || day
+	OrderTime      string `json:"order_time,omitempty"` // 2017-04-13 18:11:08 +0700
+}
+
 type CreditCardDetail struct {
-	TokenID         string   `json:"token_id,omitempty"`
-	Bank            string   `json:"bank,omitempty"`
-	InstallmentTerm int      `json:"installment_term,omitempty"`
-	Bins            []string `json:"bins,omitempty"`
-	Type            string   `json:"type,omitempty"`
-	SaveTokenID     bool     `json:"save_token_id,omitempty"`
-	Channel         string   `json:"channel,omitempty"`
+	TokenID         string       `json:"token_id,omitempty"`
+	Bank            string       `json:"bank,omitempty"`
+	InstallmentTerm int          `json:"installment_term,omitempty"`
+	Bins            []string     `json:"bins,omitempty"`
+	Type            string       `json:"type,omitempty"`
+	SaveTokenID     bool         `json:"save_token_id,omitempty"`
+	Channel         string       `json:"channel,omitempty"`
+	Installment     *Installment `json:"installment,omitempty"`
+	WhitelistBins   []string     `json:"whitelist_bins,omitempty"`
+	Secure          bool         `json:"secure,omitempty"`
+	SaveCard        bool         `json:"save_card,omitempty"`
+}
+
+type Installment struct {
+	Required bool  `json:"required,omitempty"`
+	Terms    *Term `json:"terms,omitempty"`
+}
+
+type Term struct {
+	BNI     []int `json:"bni,omitempty"`
+	Mandiri []int `json:"mandiri,omitempty"`
+	BCA     []int `json:"bca,omitempty"`
+	BRI     []int `json:"bri,omitempty"`
+	CIMB    []int `json:"cimb,omitempty"`
+	Danamon []int `json:"danamon,omitempty"`
+	Maybank []int `json:"maybank,omitempty"`
+	Offline []int `json:"offline,omitempty"`
 }
 
 type BCAKlikPay struct {
@@ -156,6 +181,10 @@ type Echannel struct {
 type VtWeb struct {
 	CreditCard3DSecure bool     `json:"credit_card_3d_secure,omitempty"`
 	EnabledPayments    []string `json:"enabled_payments,omitempty"`
+}
+
+type Callback struct {
+	Finish string `json:"finish,omitempty"`
 }
 
 func (g *Gotrans) CaptureTransaction(transaction *TransactionDetail) (APIResponse, error) {

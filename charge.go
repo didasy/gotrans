@@ -7,7 +7,7 @@ import (
 	"net/http"
 )
 
-func (g *Gotrans) Charge(targetUrl, serverKey string, transaction *Transaction) (APIResponse, error) {
+func (g *Gotrans) Charge(targetURL, serverKey string, transaction *Transaction) (APIResponse, error) {
 	response := APIResponse{}
 
 	body, err := g.CreateBody(transaction)
@@ -15,7 +15,7 @@ func (g *Gotrans) Charge(targetUrl, serverKey string, transaction *Transaction) 
 		return response, err
 	}
 
-	req, err := http.NewRequest(http.MethodPost, targetUrl, body)
+	req, err := http.NewRequest(http.MethodPost, targetURL, body)
 	if err != nil {
 		return response, err
 	}

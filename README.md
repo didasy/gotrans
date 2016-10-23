@@ -2,6 +2,8 @@
 -----------
 ##### A Midtrans.com client for golang
 
+Supporting both SNAP and regular API.
+
 ### How to use?
 
 ```
@@ -84,3 +86,4 @@ func main() {
 - Approve transaction hasn't been tested yet
 - Cancel transaction hasn't been tested yet
 - Expire transaction hasn't been tested yet
+- SNAP transaction hasn't been tested yet

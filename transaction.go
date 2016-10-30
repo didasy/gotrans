@@ -12,7 +12,7 @@ type Transaction struct {
 	PaymentType        string             `json:"payment_type,omitempty"`
 	TransactionDetails *TransactionDetail `json:"transaction_details,omitempty"`
 	BankTransfer       *BankTransfer      `json:"bank_transfer,omitempty"`
-	ItemDetails        []*ItemDetail      `json:"item_detail,omitempty"`
+	ItemDetails        []*ItemDetail      `json:"item_details,omitempty"`
 	CustomerDetails    *CustomerDetail    `json:"customer_details,omitempty"`
 	Echannel           *Echannel          `json:"echannel,omitempty"`
 	CustomField1       string             `json:"custom_field1,omitempty"` // max 255 char
@@ -58,8 +58,10 @@ type CreditCardDetail struct {
 }
 
 type Installment struct {
-	Required bool  `json:"required,omitempty"`
-	Terms    *Term `json:"terms,omitempty"`
+	Required                bool  `json:"required,omitempty"`
+	Terms                   *Term `json:"terms,omitempty"`
+	InstallmentTerms        *Term `json:"installment_terms,omitempty"`
+	OfflineInstallmentTerms []int `json:"offline_installment_terms,omitempty"`
 }
 
 type Term struct {
@@ -179,8 +181,17 @@ type Echannel struct {
 }
 
 type VtWeb struct {
-	CreditCard3DSecure bool     `json:"credit_card_3d_secure,omitempty"`
-	EnabledPayments    []string `json:"enabled_payments,omitempty"`
+	CreditCard3DSecure  bool            `json:"credit_card_3d_secure,omitempty"`
+	EnabledPayments     []string        `json:"enabled_payments,omitempty"`
+	CreditCardBins      []string        `json:"credit_card_bins,omitempty"`
+	PaymentOptions      *PaymentOptions `json:"payment_options,omitempty"`
+	FinishRedirectURL   string          `json:"finish_redirect_url,omitempty"`
+	UnfinishRedirectURL string          `json:"unfinish_redirect_url,omitempty"`
+	ErrorRedirectURL    string          `json:"error_redirect_url,omitempty"`
+}
+
+type PaymentOptions struct {
+	Installment *Installment `json:"installment,omitempty"`
 }
 
 type Callback struct {
